@@ -1,0 +1,521 @@
+openapi: "3.0.2"
+info:
+  title: "管理システムAPI"
+  description: "社内勉強制度の中で作成する管理システム用のAPI"
+  version: "1.0"
+servers:
+  - url: http://localhost/v1
+    description: "ローカル（v1）"
+tags:
+  - name: auth
+    description: "認証機能"
+  - name: users
+    description: "ユーザ操作"
+  - name: devices
+    description: "デバイス操作"
+  - name: images
+    description: "画像操作"
+paths:
+  /login:
+    post:
+      summary: "ログイン"
+      description: "メールアドレスとパスワードを用いて認証を行い、アクセストークンを発行します"
+      tags:
+        - auth
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginResponse"
+  /refresh_token:
+    get:
+      summary: "トークンリフレッシュ"
+      description: "有効期限を延長したアクセストークンを取得します"
+      tags:
+        - auth
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginResponse"
+  /users:
+    get:
+      summary: "ユーザ情報全件取得"
+      description: "登録されている全てのユーザ情報を取得します"
+      tags:
+        - users
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/userResponse"
+    post:
+      summary: "ユーザ新規登録"
+      description: "ユーザを新規で登録します（登録済みのメールアドレスの場合は登録させません）"
+      tags:
+        - users
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/userRequest"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+  /users/{userId}:
+    get:
+      summary: "ユーザ情報取得"
+      description: "指定のIDに紐づくユーザ情報を取得します"
+      tags:
+        - users
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+    put:
+      summary: "ユーザ情報更新"
+      description: "指定のIDに紐づくユーザ情報を更新します（登録済みのメールアドレスの場合は登録させません）"
+      tags:
+        - users
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/userRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+    delete:
+      summary: "ユーザ削除"
+      description: "指定のIDに紐づくユーザ情報を削除します"
+      tags:
+        - users
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "204":
+          description: OK
+  /devices:
+    get:
+      summary: "端末全件取得"
+      description: "登録されている全ての端末情報を取得します"
+      tags:
+        - devices
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/deviceResponse"
+    post:
+      summary: "デバイス新規登録"
+      description: "デバイスを新規で登録します（登録済みのシリアルNoの場合は登録させません）"
+      tags:
+        - devices
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/deviceRequest"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deviceResponse"
+  /devices/{deviceId}:
+    get:
+      summary: "端末情報取得"
+      description: "指定のIDに紐づく端末情報を取得します"
+      tags:
+        - devices
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deviceResponse"
+    put:
+      summary: "デバイス情報更新"
+      description: "指定のIDに紐づくデバイス情報を更新します"
+      tags:
+        - devices
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/deviceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/deviceRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deviceResponse"
+    delete:
+      summary: "デバイス情報削除"
+      description: "指定のIDに紐づくデバイス情報を削除します"
+      tags:
+        - devices
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/deviceId"
+      responses:
+        "204":
+          description: OK
+  /images/{id}:
+    get:
+      summary: "画像IDから画像情報取得する"
+      tags:
+        - images
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      parameters:
+        - $ref: "#/components/parameters/imageId"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/imageUrlResponse"
+        '404':
+          description: 画像が見つかりません
+  /images:
+    post:
+      summary: "画像登録"
+      tags:
+        - images
+      deprecated: false
+      security:
+        - jwt_bearer: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/imageUploadRequest"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/imageIdResponse"
+
+components:
+  parameters:
+    userId:
+      name: "userId"
+      description: "ユーザID"
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    deviceId:
+      name: "deviceId"
+      description: "端末ID"
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    imageId:
+        name: id
+        description: "画像ID"
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+  schemas:
+    loginRequest:
+      type: object
+      properties:
+        userEmail:
+          description: "メールアドレス"
+          type: string
+          format: email
+          example: "hoge@noelith.co.jp"
+        userPassword:
+          description: "パスワード"
+          type: string
+          format: password
+          example: "P@ssw0rd"
+    loginResponse:
+      type: object
+      properties:
+        accessToken:
+          description: "アクセストークン"
+          type: string
+          example: "xxxxx.yyyyy.zzzzz"
+        userId:
+          description: "ユーザID"
+          type: integer
+          example: 1
+        userRoleId:
+          description: ユーザロールID
+          type: integer
+          example: 1
+    userRequest:
+      type: object
+      properties:
+        userEmail:
+          description: "メールアドレス"
+          type: string
+          format: email
+          example: "hoge@noelith.co.jp"
+        userPassword:
+          description: "パスワード"
+          type: string
+          format: password
+          example: "P@ssw0rd"
+        userName:
+          description: "ユーザ名"
+          type: string
+          example: "ユーザ名"
+        userRoleId:
+          description: "ユーザロールID"
+          type: integer
+          example: 1
+    userResponse:
+      type: object
+      properties:
+        userId:
+          description: "ユーザID"
+          type: integer
+          example: 1
+        userEmail:
+          description: "メールアドレス"
+          type: string
+          format: email
+          example: "hoge@noelith.co.jp"
+        userName:
+          description: "ユーザ名"
+          type: string
+          example: "ユーザ名"
+        userRoleId:
+          description: "ユーザロールID"
+          type: integer
+          example: 1
+        updDate:
+          description: "更新日"
+          type: string
+          format: date-time
+        updUserId:
+          description: "更新ユーザID"
+          type: integer
+          example: 2
+        updUserName:
+          description: "更新ユーザ名"
+          type: string
+          example: "更新者名"
+        regDate:
+          description: "登録日"
+          type: string
+          format: date-time
+        regUserId:
+          description: "登録ユーザID"
+          type: integer
+          example: 3
+        regUserName:
+          description: "登録ユーザ名"
+          type: string
+          example: "登録ユーザ名"
+    deviceRequest:
+      type: object
+      properties:
+        deviceTypeId:
+          description: "端末種別ID"
+          type: integer
+          example: 1
+        deviceOsId:
+          description: "OSID"
+          type: integer
+          example: 1
+        userName:
+          description: "端末名"
+          type: string
+          example: "端末名"
+        userRoleId:
+          description: "シリアルNo"
+          type: string
+          example: "5CD309FXXX"
+        deviceSpec:
+          description: "端末仕様"
+          type: string
+          example: |
+            デバイス名	Noelith-m
+            プロセッサ	13th Gen Intel(R) Core(TM) i7-1355U   1.70 GHz
+            実装 RAM	16.0 GB (15.6 GB 使用可能)
+            デバイス ID	AE12516E-E8FB-442B-A276-9E7A4DEFD42D
+            プロダクト ID	00342-22117-66175-AAOEM
+            システムの種類	64 ビット オペレーティング システム、x64 ベース プロセッサ
+            ペンとタッチ	10 タッチ ポイントでのタッチのサポート
+        deviceImageID:
+          description: "端末画像ID"
+          type: integer
+          example: 1
+        acAdaptorImagePath:
+          description: "ACアダプタ画像ID"
+          type: integer
+          example: 1
+        ownerUserId:
+          description: "所有者ID"
+          type: integer
+          example: 1
+    deviceResponse:
+      type: object
+      properties:
+        deviceId:
+          description: "端末ID"
+          type: integer
+          example: 1
+        deviceTypeId:
+          description: "端末種別ID"
+          type: integer
+          example: 1
+        deviceTypeName:
+          description: "端末種別名"
+          type: string
+          example: "PC"
+        deviceOsId:
+          description: "OSID"
+          type: integer
+          example: 1
+        deviceOsName:
+          description: "OS名"
+          type: string
+          example: "Windows 10"  
+        userName:
+          description: "端末名"
+          type: string
+          example: "端末名"
+        userRoleId:
+          description: "シリアルNo"
+          type: string
+          example: "5CD309FXXX"
+        deviceSpec:
+          description: "端末仕様"
+          type: string
+          example:  |
+            デバイス名	Noelith-m
+            プロセッサ	13th Gen Intel(R) Core(TM) i7-1355U   1.70 GHz
+            実装 RAM	16.0 GB (15.6 GB 使用可能)
+            デバイス ID	AE12516E-E8FB-442B-A276-9E7A4DEFD42D
+            プロダクト ID	00342-22117-66175-AAOEM
+            システムの種類	64 ビット オペレーティング システム、x64 ベース プロセッサ
+            ペンとタッチ	10 タッチ ポイントでのタッチのサポート
+        deviceImageUrl:
+          description: "端末画像へアクセスするURL"
+          type: string
+          example: "/images/{imageId}"
+        acAdaptorImageUrl:
+          description: "ACアダプタ画像へアクセスするURL"
+          type: string
+          example: "/images/{imageId}"
+        ownerUserId:
+          description: "所有者ID"
+          type: integer
+          example: 1
+    imageUrlResponse:
+      type: string
+      format: binary
+    imageUploadRequest:
+      type: object
+      properties:
+        deviceImageName:
+          type: string
+        file:
+          type: string
+          format: binary
+    imageIdResponse:
+      type: object
+      properties:
+        imageId:
+          type: integer
+          description: "アップロードした画像のID"
+          example: 1
+  securitySchemes:
+    jwt_bearer:
+      description: "JWTトークン認証"
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

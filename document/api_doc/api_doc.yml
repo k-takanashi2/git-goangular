@@ -1,6 +1,6 @@
 openapi: "3.0.2"
 info:
-  title: "管理システムAPI"
+  title: "管理システムAPI　テスト"
   description: "社内勉強制度の中で作成する管理システム用のAPI"
   version: "1.0"
 servers:
